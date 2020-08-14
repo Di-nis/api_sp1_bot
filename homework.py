@@ -12,7 +12,8 @@ load_dotenv()
 PRACTICUM_TOKEN = os.getenv("PRACTICUM_TOKEN")
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
-api = 'https://praktikum.yandex.ru/api/user_api/homework_statuses/'
+api_praktikum = 'https://praktikum.yandex.ru/api/user_api/homework_statuses/'
+logger = logging.getLogger('my_logger')
 
 
 def parse_homework_status(homework):
@@ -27,16 +28,22 @@ def parse_homework_status(homework):
 def get_homework_statuses(current_timestamp):
     headers = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
     params = {'from_date': current_timestamp}
-    homework_statuses = requests.get('{}'.format(api),
-                                     headers=headers,
-                                     params=params)
-    return homework_statuses.json()
+    try:
+        homework_statuses = requests.get('{}'.format(api_praktikum),
+                                         headers=headers,
+                                         params=params)
+        return homework_statuses.json()
+    except Exception as err:
+        logger.error('Ошибка соедиения с Практикум')
 
 
 def send_message(text):
-    proxy = telegram.utils.request.Request(proxy_url='socks5://45.91.93.166:1080')
-    bot = telegram.Bot(token=TELEGRAM_TOKEN, request=proxy)
-    return bot.send_message(chat_id=CHAT_ID, text=text)
+    try:
+        proxy = telegram.utils.request.Request(proxy_url='socks5://45.91.93.166:1080')
+        bot = telegram.Bot(token=TELEGRAM_TOKEN, request=proxy)
+        return bot.send_message(chat_id=CHAT_ID, text=text)
+    except Exception as err:
+        logger.error('Ошибка соедиения с Telegram')
 
 
 def main():
