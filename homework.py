@@ -22,9 +22,9 @@ def parse_homework_status(homework):
     homework_status = homework.get('status')
     homework_name = homework.get('homework_name')
     if homework_status is None or homework_name is None:
-        raise ValueError('Неверный ответ сервера')
-        logger.error('Неверный ответ сервера')
-    elif homework_status == 'rejected':
+        logger.error(f'Неверный ответ сервера: {homework}')
+        return 'Неверный ответ сервера'
+    if homework_status == 'rejected':
         verdict = 'К сожалению в работе нашлись ошибки.'
     else:
         verdict = 'Ревьюеру всё понравилось, можно приступать к следующему уроку.'
@@ -50,6 +50,7 @@ def send_message(text):
         bot.send_message(chat_id=CHAT_ID, text=text)
     except Exception as e:
         logger.error(f'Ошибка соедиения с Telegram: {e}')
+        return {}
     return bot.send_message(chat_id=CHAT_ID, text=text)
 
 
