@@ -42,6 +42,7 @@ def get_homework_statuses(current_timestamp=None):
                                          params=params)
     except Exception as e:
         logger.error(f'Ошибка соедиения с Практикум {e}')
+        return {}
     return homework_statuses.json()
 
 
@@ -50,7 +51,6 @@ def send_message(text):
         bot.send_message(chat_id=CHAT_ID, text=text)
     except Exception as e:
         logger.error(f'Ошибка соедиения с Telegram: {e}')
-        return {}
     return bot.send_message(chat_id=CHAT_ID, text=text)
 
 
